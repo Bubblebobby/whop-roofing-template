@@ -1,5 +1,7 @@
 # Whop Roofing Template
 
+**Live demo:** https://summitridge-roof-7k2q.whop.site (test mode: every plan charges $1)
+
 A production-ready website template for US roofing contractors, built on **Whop Websites** (TanStack Start on Whop hosting) and **Whop Payments**. It covers the full high-ticket flow:
 
 ```
@@ -20,7 +22,7 @@ Job done ──► /admin/billing ──► Whop Invoice for the balance (auto-c
 | `Payments` in setup mode + `EmailElement` + `PaymentElement` + required `BrandingElement` | `DepositCheckout.tsx` |
 | Setup intents API (card on file) | `src/routes/api/deposit/setup-intent.ts` |
 | Payments API, off-session charge of the saved card | `src/routes/api/deposit/charge.ts` |
-| Leads API | `src/routes/api/leads.ts` |
+| Leads API (plus a server-side `lead` event via the Events API for visitors Whop doesn't know yet) | `src/routes/api/leads.ts` |
 | Invoices API (`charge_automatically` / `send_invoice`) | `src/routes/api/admin/invoices.ts` |
 | App secrets + injected API auth | `src/server/whop.ts` |
 
@@ -118,3 +120,7 @@ scripts/setup-whop.mjs           creates product, plans and secrets via the Whop
 5. Pay the deposit: Payment element plus the Branding element, with the Express Checkout buttons below. `deposit_started` fires, then the confirmation page.
 6. Open `/admin/billing`, select the saved card, enter a $14,000 total. The invoice is created and charged ($13,500 balance). Show it under Invoices and Payments in the dashboard.
 7. Show the pixel events in the Whop dashboard.
+
+## Leads: how visitors map to Whop users
+
+Whop's Leads API attaches every lead to a Whop **user** (`user_id` is required), and the API has no field for a raw email. So `/api/leads` resolves the visitor's email first: it checks the account's members (anyone who has paid through checkout), then people identified by the pixel. When it finds a user, it creates a real Whop Lead with the quote details as metadata. A first-time visitor Whop has never seen gets a server-side `lead` event (Events API) with their name, email, phone and ZIP instead, which lands under **People** in the dashboard. The browser's `lead` pixel event shares its `event_id`, so Whop counts it once.
