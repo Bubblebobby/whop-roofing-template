@@ -16,7 +16,7 @@ Job done ──► /admin/billing ──► Whop Invoice for the balance (auto-c
 | Whop Websites hosting (`@whop/cli/vite`, `whop apps deploy`) | `vite.config.ts` |
 | Pixel auto page views + checkout events, plus `whop.track` custom events | `src/lib/track.ts` |
 | `CheckoutElement` (financing such as Klarna, Afterpay and Splitit surfaces here for approved merchants) | `src/components/checkout/PlanCheckout.tsx` |
-| `ExpressCheckoutElement` (Apple Pay / Google Pay / PayPal) | `PlanCheckout.tsx`, `DepositCheckout.tsx` |
+| `ExpressCheckoutElement` (Apple Pay / Google Pay / PayPal) | `DepositCheckout.tsx` (the Checkout element includes wallets on its own) |
 | `Payments` in setup mode + `EmailElement` + `PaymentElement` + required `BrandingElement` | `DepositCheckout.tsx` |
 | Setup intents API (card on file) | `src/routes/api/deposit/setup-intent.ts` |
 | Payments API, off-session charge of the saved card | `src/routes/api/deposit/charge.ts` |
@@ -114,7 +114,7 @@ scripts/setup-whop.mjs           creates product, plans and secrets via the Whop
 1. Open the live site with `?debug=1`; scroll through the sections on desktop, then on a phone.
 2. Open **Roof Replacement**: `service_viewed` appears in the inspector.
 3. Submit the estimate form. Show the success state, the `estimate_requested` event, and the new lead in the Whop dashboard.
-4. Book the inspection: Checkout element plus the Express Checkout buttons. Complete it with a test plan.
-5. Pay the deposit: Payment element plus the Branding element. `deposit_started` fires, then the confirmation page.
+4. Book the inspection with the Checkout element (wallets, card, financing). Complete it with a test plan.
+5. Pay the deposit: Payment element plus the Branding element, with the Express Checkout buttons below. `deposit_started` fires, then the confirmation page.
 6. Open `/admin/billing`, select the saved card, enter a $14,000 total. The invoice is created and charged ($13,500 balance). Show it under Invoices and Payments in the dashboard.
 7. Show the pixel events in the Whop dashboard.

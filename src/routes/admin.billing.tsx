@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { formatUsd, getOffer, site } from '#/site.config'
+import { formatUsd, site } from '#/site.config'
+import { useOffer } from '#/lib/offers'
 
 export const Route = createFileRoute('/admin/billing')({
   head: () => ({ meta: [{ title: `Final balance billing | ${site.company.name}` }, { name: 'robots', content: 'noindex, nofollow' }] }),
@@ -27,7 +28,7 @@ function BillingPage() {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<InvoiceResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const deposit = getOffer('deposit')?.price ?? 0
+  const deposit = useOffer('deposit')?.price ?? 0
 
   useEffect(() => {
     try {

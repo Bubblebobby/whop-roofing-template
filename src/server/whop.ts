@@ -48,8 +48,9 @@ export async function whopApi<T = any>(
   if (key) headers.authorization = `Bearer ${key}`
   if (init.idempotencyKey) headers['idempotency-key'] = init.idempotencyKey
 
+  const method = init.method ?? (init.body === undefined ? 'GET' : 'POST')
   const res = await fetch(`${apiBase()}${path}`, {
-    method: init.method ?? (init.body === undefined ? 'GET' : 'POST'),
+    method,
     headers,
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   })
@@ -62,7 +63,7 @@ export async function whopApi<T = any>(
   }
   if (!res.ok) {
     const message = data?.error?.message ?? data?.message ?? `Whop API ${res.status}`
-    console.error(`[whop] ${init.method ?? 'GET'} ${path} → ${res.status}`, text.slice(0, 500))
+    console.error(`[whop] ${method} ${path.split('?')[0]} → ${res.status}`, text.slice(0, 500))
     throw new WhopApiError(message, res.status, data)
   }
   return data as T

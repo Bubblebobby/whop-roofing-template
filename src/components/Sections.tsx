@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { formatUsd, site } from '#/site.config'
 import type { Offer, Service } from '#/site.config'
 import { track } from '#/lib/track'
+import { useOffer, useOffers } from '#/lib/offers'
 import { ArrowIcon, CardIcon, CheckIcon, PinIcon, ServiceIcon, ShieldIcon, StarIcon } from './Icons'
 import { EstimateForm } from './EstimateForm'
 import { telHref } from './SiteHeader'
@@ -17,6 +18,7 @@ export function SectionHeading({ eyebrow, title, body, light }: { eyebrow: strin
 }
 
 export function Hero() {
+  const inspection = useOffer('inspection')
   return (
     <section className="roof-pattern relative overflow-hidden bg-ink text-white">
       <div className="container-x grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:py-28">
@@ -29,7 +31,7 @@ export function Hero() {
               Get a free estimate <ArrowIcon className="h-4 w-4" />
             </a>
             <Link to="/book/$offer" params={{ offer: 'inspection' }} className="btn border border-white/25 px-6 py-3.5 text-base text-white hover:bg-white/10">
-              Book a {formatUsd(site.offers.find((o) => o.key === 'inspection')?.price ?? 0)} inspection
+              Book a {formatUsd(inspection?.price ?? 0)} inspection
             </Link>
           </div>
           <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/10 pt-8">
@@ -98,13 +100,14 @@ export function TrustStrip() {
   )
 }
 
-export function serviceCtaLabel(service: Service) {
-  const offer = site.offers.find((o) => o.key === service.cta)
+export function serviceCtaLabel(service: Service, offers: Offer[]) {
+  const offer = offers.find((o) => o.key === service.cta)
   if (!offer) return 'Get a free estimate'
   return service.cta === 'deposit' ? `Book with ${formatUsd(offer.price)} deposit` : `Book for ${formatUsd(offer.price)}`
 }
 
 export function ServiceCta({ service, className = 'btn-primary' }: { service: Service; className?: string }) {
+  const offers = useOffers()
   if (service.cta === 'estimate') {
     return (
       <a href="/#estimate" className={className}>
@@ -114,7 +117,7 @@ export function ServiceCta({ service, className = 'btn-primary' }: { service: Se
   }
   return (
     <Link to="/book/$offer" params={{ offer: service.cta }} className={className}>
-      {serviceCtaLabel(service)}
+      {serviceCtaLabel(service, offers)}
     </Link>
   )
 }
@@ -194,6 +197,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
 }
 
 export function Pricing() {
+  const offers = useOffers()
   return (
     <section id="pricing" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-x">
@@ -203,7 +207,7 @@ export function Pricing() {
           body="Pay securely with card, Apple Pay or Google Pay. Bigger projects start with a deposit; the balance is invoiced after your final walkthrough."
         />
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {site.offers.map((o) => (
+          {offers.map((o) => (
             <OfferCard key={o.key} offer={o} />
           ))}
         </div>

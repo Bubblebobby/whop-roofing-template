@@ -5,6 +5,7 @@ import { WhopProvider } from '#/components/checkout/WhopProvider'
 import { PlanCheckout } from '#/components/checkout/PlanCheckout'
 import { DepositCheckout } from '#/components/checkout/DepositCheckout'
 import { telHref } from '#/components/SiteHeader'
+import { useOffer } from '#/lib/offers'
 
 const rootApi = getRouteApi('__root__')
 
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/book/$offer')({
 })
 
 function BookPage() {
-  const offer = Route.useLoaderData()
+  const offer = useOffer(Route.useLoaderData().key)!
   const config = rootApi.useLoaderData()
   const planId = config.plans[offer.key]
   const ready = !!planId && !!config.accountId

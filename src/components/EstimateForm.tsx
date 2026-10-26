@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { site } from '#/site.config'
-import { track } from '#/lib/track'
+import { newEventId, track } from '#/lib/track'
 import { CheckIcon } from './Icons'
 
 type Status = { state: 'idle' } | { state: 'sending' } | { state: 'sent'; leadId: string } | { state: 'error'; message: string }
@@ -16,17 +16,18 @@ export function EstimateForm({ defaultService }: { defaultService?: string }) {
     const form = e.currentTarget
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>
     setStatus({ state: 'sending' })
+    const eventId = newEventId('est')
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...data, source: window.location.href }),
+        body: JSON.stringify({ ...data, eventId, source: window.location.href }),
       })
       const body = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(body.error ?? 'We could not send your request.')
-      // Fire once the lead exists, keyed by the Whop lead ID so retries never double-count.
-      track('estimate_requested', { event_id: body.id, service: data.service, timeline: data.timeline, zip: data.zip })
-      track('lead', { event_id: body.id })
+      // Fire once the request is stored. The standard `lead` shares the server's event_id, so Whop counts it once.
+      track('estimate_requested', { event_id: eventId, lead_id: body.id, service: data.service, timeline: data.timeline, zip: data.zip })
+      track('lead', { event_id: eventId, name: data.name, email: data.email, phone: data.phone })
       setStatus({ state: 'sent', leadId: body.id })
       form.reset()
     } catch (err) {

@@ -33,7 +33,7 @@ export function DepositCheckout({ offer, planId, accountId }: Props) {
       <Payments accountId={accountId} mode="setup" currency="usd" returnUrl={returnUrl} appearance={checkoutAppearance}>
         <DepositForm offer={offer} />
       </Payments>
-      <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wider text-slate-400">
+      <div className="flex items-center gap-3 pt-2 text-xs font-medium uppercase tracking-wider text-slate-400">
         <span className="h-px flex-1 bg-slate-200" />
         or pay the deposit with a wallet
         <span className="h-px flex-1 bg-slate-200" />
