@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Brand tokens. --brand / --brand-dark / --ink are overridden at runtime from site.config.ts → theme. */
+:root {
+  --brand: #c2410c;
+  --brand-dark: #9a3412;
+  --ink: #0f172a;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Barlow Condensed", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-ink: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+@utility h-display {
+  font-family: var(--font-display);
+  @apply font-bold uppercase tracking-tight leading-[0.95];
+}
+@utility eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-white shadow-sm hover:bg-brand-dark;
+}
+@utility btn-dark {
+  @apply btn bg-ink text-white hover:bg-slate-800;
+}
+@utility btn-ghost {
+  @apply btn border border-slate-300 bg-white text-ink hover:border-slate-400 hover:bg-slate-50;
+}
+@utility card {
+  @apply rounded-2xl border border-slate-200 bg-white;
+}
+@utility field-label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+@utility field {
+  @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+}
+@utility roof-pattern {
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 0.04) 25%, transparent 25%),
+    linear-gradient(225deg, rgb(255 255 255 / 0.04) 25%, transparent 25%);
+  background-size: 28px 28px;
+}
