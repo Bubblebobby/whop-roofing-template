@@ -123,8 +123,8 @@ function CompletePage() {
 function initialView(search: Search): View {
   const status = search.status
   if (status === 'failed' || status === 'canceled') return 'failed'
-  // Deposit card verified off-site, deposit not charged yet.
-  if (search.offer === 'deposit' && search.setup && !search.payment && status === 'succeeded') return 'finishing'
+  // Deposit card saved (or still saving), deposit not charged yet: the charge endpoint waits for the card.
+  if (search.offer === 'deposit' && search.setup && !search.payment && (status === 'succeeded' || status === 'processing')) return 'finishing'
   if (status === 'succeeded' || status === 'paid') return 'success'
   if (!status && !search.payment) return 'success' // Checkout element finished inline and redirected without an off-site step
   return 'pending'

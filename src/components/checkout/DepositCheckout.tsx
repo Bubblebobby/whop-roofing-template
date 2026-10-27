@@ -99,11 +99,9 @@ function DepositForm({ offer }: { offer: Offer }) {
         if (status !== 'succeeded') throw new Error(next.lastPaymentError?.message ?? 'Card verification was not completed.')
       }
       if (status === 'canceled') throw new Error('That card could not be saved. Please try another.')
-      if (status === 'processing') {
-        return navigate({ to: '/book/complete', search: { offer: offer.key, setup: setup.id, status: 'processing' } })
-      }
 
-      // 2) Charge the deposit to the saved card.
+      // 2) Charge the deposit to the saved card. A setup still "processing" is fine:
+      //    the server waits for Whop to finish saving the card before charging.
       setStep('charging')
       const charge = await post<{ paymentId: string; status: string }>('/api/deposit/charge', { setupIntentId: setup.id })
       try {
