@@ -35,6 +35,17 @@ async function waitForSetup(setupIntentId: string) {
   }
 }
 
+/** A new off-session payment starts "open" and usually settles within a second or two. */
+async function waitForPayment(payment: { id: string; status: string }) {
+  const deadline = Date.now() + 10_000
+  while (payment.status === 'open' || payment.status === 'pending') {
+    if (Date.now() > deadline) break
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS))
+    payment = await whopApi<{ id: string; status: string }>(`/payments/${payment.id}`)
+  }
+  return payment
+}
+
 /**
  * Step 2 of the deposit: charge the deposit plan to the card the setup intent
  * just saved. The same card stays on file for the final-balance invoice.
@@ -62,7 +73,7 @@ export const Route = createFileRoute('/api/deposit/charge')({
           }
 
           const depositPlan = requireEnv(site.offers.find((o) => o.key === 'deposit')!.planEnv)
-          const payment = await whopApi<{ id: string; status: string; substatus?: string }>('/payments', {
+          const created = await whopApi<{ id: string; status: string; substatus?: string }>('/payments', {
             idempotencyKey: `deposit-${setupIntent.id}`,
             body: {
               account_id: accountId(),
@@ -71,6 +82,7 @@ export const Route = createFileRoute('/api/deposit/charge')({
               payment_method_id: setupIntent.payment_method_id,
             },
           })
+          const payment = await waitForPayment(created)
           return Response.json({
             paymentId: payment.id,
             status: payment.status,

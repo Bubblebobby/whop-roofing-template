@@ -55,7 +55,7 @@ function CompletePage() {
           sessionStorage.removeItem(PENDING_DEPOSIT_KEY)
         } catch {}
         setPaymentId(data.paymentId)
-        setView(data.status === 'failed' ? 'failed' : 'success')
+        setView(data.status === 'paid' ? 'success' : data.status === 'failed' ? 'failed' : 'pending')
       })
       .catch((err) => {
         setError(err.message)
