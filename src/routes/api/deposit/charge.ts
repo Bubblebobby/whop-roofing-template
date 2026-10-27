@@ -8,19 +8,28 @@ type SetupIntent = {
   created_at: string
   member_id: string | null
   payment_method_id: string | null
+  last_setup_error: { message?: string } | null
 }
 
 const MAX_AGE_MS = 60 * 60 * 1000
 const SETTLE_TIMEOUT_MS = 20_000
-const POLL_INTERVAL_MS = 1_000
+const POLL_INTERVAL_MS = 750
 
-/** Polls the setup status until it leaves its in-progress states, or the timeout passes. */
+/**
+ * Whop saves the card asynchronously: the setup intent reports success a moment
+ * before the saved card and member are attached to it. Poll until both are present,
+ * the setup fails, or the timeout passes.
+ */
 async function waitForSetup(setupIntentId: string) {
   const deadline = Date.now() + SETTLE_TIMEOUT_MS
   for (;;) {
-    const { status } = await whopApi<{ status: string }>(`/setup_intents/${setupIntentId}/status`)
-    if (['succeeded', 'canceled', 'requires_action', 'requires_payment_method'].includes(status) || Date.now() > deadline) {
-      return status
+    const setupIntent = await whopApi<SetupIntent>(`/setup_intents/${setupIntentId}`)
+    const ready = setupIntent.status === 'succeeded' && !!setupIntent.payment_method_id && !!setupIntent.member_id
+    // Intermediate statuses can appear before success, so only a cancel or a recorded error ends the wait early.
+    const failed = setupIntent.status === 'canceled' || !!setupIntent.last_setup_error
+    if (ready || failed || Date.now() > deadline) {
+      console.log(`[deposit] ${setupIntentId} settled as ${setupIntent.status}, ready=${ready}`)
+      return setupIntent
     }
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS))
   }
@@ -41,13 +50,10 @@ export const Route = createFileRoute('/api/deposit/charge')({
             throw new WhopApiError('Missing setup intent.', 400, null)
           }
 
-          // Whop finishes saving the card asynchronously (a few seconds after the setup
-          // intent is created), so wait for the setup status to settle before charging.
-          const status = await waitForSetup(setupIntentId)
-          if (status === 'requires_action') {
-            throw new WhopApiError('Your bank needs to verify this card. Please try again.', 409, null)
+          const setupIntent = await waitForSetup(setupIntentId)
+          if (setupIntent.last_setup_error) {
+            throw new WhopApiError(setupIntent.last_setup_error.message ?? 'Your card could not be saved. Please try another.', 402, null)
           }
-          const setupIntent = await whopApi<SetupIntent>(`/setup_intents/${setupIntentId}`)
           if (setupIntent.status !== 'succeeded' || !setupIntent.payment_method_id || !setupIntent.member_id) {
             throw new WhopApiError('Your card was not saved yet. Please try again.', 409, null)
           }
