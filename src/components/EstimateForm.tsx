@@ -42,10 +42,10 @@ export function EstimateForm({ defaultService }: { defaultService?: string }) {
           <CheckIcon className="h-6 w-6" />
         </div>
         <h3 className="mt-4 text-xl font-semibold">Request received</h3>
-        <p className="mt-2 text-slate-600">
+        <p className="mt-2 text-stone-600">
           A project manager will call you within one business day to schedule your free on-site estimate.
         </p>
-        <p className="mt-4 text-xs text-slate-400">Reference {status.leadId}</p>
+        <p className="mt-4 text-xs text-stone-400">Reference {status.leadId}</p>
         <button type="button" className="btn-ghost mt-6" onClick={() => setStatus({ state: 'idle' })}>
           Send another request
         </button>
@@ -57,7 +57,7 @@ export function EstimateForm({ defaultService }: { defaultService?: string }) {
     <form onSubmit={onSubmit} className="card grid gap-4 p-6 sm:grid-cols-2 sm:p-8" noValidate={false}>
       <div className="sm:col-span-2">
         <h3 className="text-xl font-semibold">Request a free estimate</h3>
-        <p className="mt-1 text-sm text-slate-500">No obligation. We reply within one business day.</p>
+        <p className="mt-1 text-sm text-stone-500">No obligation. We reply within one business day.</p>
       </div>
       <label className="block">
         <span className="field-label">Full name</span>
@@ -106,7 +106,7 @@ export function EstimateForm({ defaultService }: { defaultService?: string }) {
         </p>
       )}
       <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-slate-500">By submitting you agree to be contacted about your project.</p>
+        <p className="text-xs text-stone-500">By submitting you agree to be contacted about your project.</p>
         <button type="submit" className="btn-primary" disabled={status.state === 'sending'}>
           {status.state === 'sending' ? 'Sending…' : 'Request my estimate'}
         </button>

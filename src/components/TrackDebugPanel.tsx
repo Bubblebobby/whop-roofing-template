@@ -36,25 +36,25 @@ export function TrackDebugPanel() {
   const pixel = typeof window !== 'undefined' && !!window.whop
 
   return (
-    <div className="fixed bottom-20 right-3 z-50 w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-slate-700 bg-slate-900 font-mono text-[11px] text-slate-200 shadow-2xl md:bottom-4">
+    <div className="fixed bottom-20 right-3 z-50 w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-xl border border-stone-700 bg-stone-900 font-mono text-[11px] text-stone-200 shadow-2xl md:bottom-4">
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className="flex w-full items-center justify-between gap-2 bg-slate-800 px-3 py-2 text-left"
+        className="flex w-full items-center justify-between gap-2 bg-stone-800 px-3 py-2 text-left"
       >
         <span className="font-semibold">whop.track · {entries.length} events</span>
         <span className={pixel ? 'text-emerald-400' : 'text-amber-400'}>{pixel ? '● pixel live' : '● no pixel (local)'}</span>
       </button>
       {!collapsed && (
         <ol className="max-h-64 space-y-1.5 overflow-y-auto p-3">
-          {entries.length === 0 && <li className="text-slate-500">No custom events yet. Open a service or submit the form.</li>}
+          {entries.length === 0 && <li className="text-stone-500">No custom events yet. Open a service or submit the form.</li>}
           {[...entries].reverse().map((e, i) => (
-            <li key={`${e.at}-${i}`} className="rounded bg-slate-800/60 px-2 py-1.5">
+            <li key={`${e.at}-${i}`} className="rounded bg-stone-800/60 px-2 py-1.5">
               <div className="flex justify-between gap-2">
                 <span className="font-semibold text-orange-300">{e.name}</span>
-                <span className="text-slate-500">{new Date(e.at).toLocaleTimeString()}</span>
+                <span className="text-stone-500">{new Date(e.at).toLocaleTimeString()}</span>
               </div>
-              <div className="truncate text-slate-400">{JSON.stringify(e.props)}</div>
+              <div className="truncate text-stone-400">{JSON.stringify(e.props)}</div>
             </li>
           ))}
         </ol>

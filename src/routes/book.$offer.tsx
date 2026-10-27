@@ -28,22 +28,22 @@ function BookPage() {
   const ready = !!planId && !!config.accountId
 
   return (
-    <section className="bg-slate-50 py-10 sm:py-16">
+    <section className="page-top pb-10 sm:pb-16">
       <div className="container-x grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Link to="/" hash="pricing" className="text-sm font-medium text-slate-500 hover:text-ink">
+          <Link to="/" hash="pricing" className="text-sm font-medium text-stone-500 hover:text-ink">
             ← Back to pricing
           </Link>
           <p className="eyebrow mt-6">Secure booking</p>
           <h1 className="h-display mt-2 text-4xl sm:text-5xl">{offer.name}</h1>
-          <p className="mt-3 text-slate-600">{offer.summary}</p>
+          <p className="mt-3 text-stone-600">{offer.summary}</p>
           <div className="card mt-6 p-6">
             <div className="flex items-baseline justify-between gap-4">
-              <span className="text-sm text-slate-500">Due today</span>
+              <span className="text-sm text-stone-500">Due today</span>
               <span className="h-display text-4xl">{formatUsd(offer.price)}</span>
             </div>
-            <p className="mt-1 text-right text-xs text-slate-500">{offer.priceNote}</p>
-            <ul className="mt-5 space-y-2.5 border-t border-slate-100 pt-5 text-sm text-slate-700">
+            <p className="mt-1 text-right text-xs text-stone-500">{offer.priceNote}</p>
+            <ul className="mt-5 space-y-2.5 border-t border-stone-100 pt-5 text-sm text-stone-700">
               {offer.includes.map((i) => (
                 <li key={i} className="flex gap-2">
                   <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
@@ -53,7 +53,7 @@ function BookPage() {
             </ul>
           </div>
           {offer.key === 'deposit' && (
-            <ol className="mt-6 space-y-3 text-sm text-slate-600">
+            <ol className="mt-6 space-y-3 text-sm text-stone-600">
               <li>
                 <strong className="text-ink">Today:</strong> {formatUsd(offer.price)} deposit; card saved on file.
               </li>
@@ -65,8 +65,8 @@ function BookPage() {
               </li>
             </ol>
           )}
-          <p className="mt-6 flex items-start gap-2 text-xs text-slate-500">
-            <ShieldIcon className="h-4 w-4 shrink-0 text-slate-400" />
+          <p className="mt-6 flex items-start gap-2 text-xs text-stone-500">
+            <ShieldIcon className="h-4 w-4 shrink-0 text-stone-400" />
             Payments are processed by Whop. Eligible buyers will see pay-over-time options at checkout.
           </p>
         </aside>
@@ -75,7 +75,7 @@ function BookPage() {
           {!ready ? (
             <div className="py-10 text-center">
               <h2 className="text-lg font-semibold">Online booking is being set up</h2>
-              <p className="mt-2 text-slate-600">Call us and we will book you right away.</p>
+              <p className="mt-2 text-stone-600">Call us and we will book you right away.</p>
               <a href={telHref()} className="btn-primary mt-6">
                 {site.company.phone}
               </a>

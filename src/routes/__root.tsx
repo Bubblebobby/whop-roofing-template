@@ -27,7 +27,7 @@ export const Route = createRootRoute({
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=Inter:wght@400;500;600;700&display=swap',
       },
       { rel: 'stylesheet', href: appCss },
       {
@@ -46,7 +46,7 @@ function RootLayout() {
   return (
     <>
       <SiteHeader />
-      <main className="pb-20 md:pb-0">
+      <main>
         <Outlet />
       </main>
       <SiteFooter />
@@ -61,6 +61,7 @@ function RootDocument({ children }: { children: ReactNode }) {
     '--brand': site.theme.primary,
     '--brand-dark': site.theme.primaryDark,
     '--ink': site.theme.ink,
+    '--sand': site.theme.sand,
   } as CSSProperties
   return (
     <html lang="en" style={themeVars}>

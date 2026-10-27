@@ -20,7 +20,12 @@ export type Service = {
   /** Which offer the service's primary button sells. `estimate` scrolls to the quote form. */
   cta: OfferKey | 'estimate'
   icon: 'repair' | 'replace' | 'inspect' | 'gutter'
+  /** Card and page photo. Any image URL; Unsplash URLs are resized with `photo()`. */
+  image: string
+  imageAlt: string
 }
+
+export type TrustIcon = 'certified' | 'insured' | 'warranty' | 'rated'
 
 export type Offer = {
   key: OfferKey
@@ -59,6 +64,16 @@ export const site = {
       { value: '4.9★', label: 'from 1,200+ reviews' },
       { value: '25-yr', label: 'workmanship warranty' },
     ],
+    image: 'https://images.unsplash.com/photo-1643225523483-e2c434191bba',
+    imageAlt: 'Roofer carrying a bundle of shingles across a residential roof',
+  },
+
+  about: {
+    eyebrow: 'About us',
+    statement:
+      'Since 2009 our crews have repaired, replaced and inspected more than 4,800 Central Texas roofs. One crew lead runs your job from the first estimate to the final magnet sweep, and every roof leaves with a written warranty.',
+    image: 'https://images.unsplash.com/photo-1633759593085-1eaeb724fc88',
+    imageAlt: 'Crew member removing old shingles during a tear-off',
   },
 
   services: [
@@ -77,6 +92,8 @@ export const site = {
       priceHint: 'Flat-rate from $395',
       cta: 'flatRate',
       icon: 'repair',
+      image: 'https://images.unsplash.com/photo-1635424709961-f3a150459ad4',
+      imageAlt: 'Two roofers repairing shingles on a house',
     },
     {
       slug: 'roof-replacement',
@@ -93,6 +110,8 @@ export const site = {
       priceHint: '$500 deposit to book',
       cta: 'deposit',
       icon: 'replace',
+      image: 'https://images.unsplash.com/photo-1763665814538-8ba04597286c',
+      imageAlt: 'Crew installing new roof tiles',
     },
     {
       slug: 'roof-inspection',
@@ -109,6 +128,8 @@ export const site = {
       priceHint: '$149 flat',
       cta: 'inspection',
       icon: 'inspect',
+      image: 'https://images.unsplash.com/photo-1632759145351-1d592919f522',
+      imageAlt: 'Inspector standing on a residential roof',
     },
     {
       slug: 'gutters-and-storm',
@@ -125,6 +146,8 @@ export const site = {
       priceHint: 'Free estimate',
       cta: 'estimate',
       icon: 'gutter',
+      image: 'https://images.unsplash.com/photo-1634853982486-c06f0e17940f',
+      imageAlt: 'Close-up of a rain gutter along a shingle roof',
     },
   ] satisfies Service[],
 
@@ -169,6 +192,13 @@ export const site = {
     radiusMiles: 45,
   },
 
+  process: [
+    { title: 'Free estimate', body: 'Request a quote online or call. A project manager measures your roof and sends photos of what we found.' },
+    { title: 'Clear, written price', body: 'You get an itemized quote with material options. No pressure, no surprise line items later.' },
+    { title: 'Install day', body: 'Your crew lead arrives on time, protects the yard, and most replacements finish in a single day.' },
+    { title: 'Walkthrough & warranty', body: 'We walk the finished roof with you, sweep for nails, and hand over your written warranty.' },
+  ],
+
   financing: {
     headline: 'Pay over time, right at checkout',
     body: 'Eligible customers see monthly-payment options such as Klarna, Afterpay and Splitit directly in checkout. No separate application and no paperwork with us.',
@@ -176,11 +206,13 @@ export const site = {
   },
 
   trust: [
-    { title: 'GAF Certified', body: 'Factory-certified installer: top 3% of US roofers.' },
-    { title: 'Fully insured', body: '$2M general liability plus workers’ comp on every crew.' },
-    { title: '25-year warranty', body: 'Written workmanship warranty, transferable on sale.' },
-    { title: 'A+ BBB rating', body: 'Accredited since 2011 with zero unresolved complaints.' },
-  ],
+    { title: 'GAF Certified', body: 'Factory-certified installer: top 3% of US roofers.', icon: 'certified' },
+    { title: 'Fully insured', body: '$2M general liability plus workers’ comp on every crew.', icon: 'insured' },
+    { title: '25-year warranty', body: 'Written workmanship warranty, transferable on sale.', icon: 'warranty' },
+    { title: 'A+ BBB rating', body: 'Accredited since 2011 with zero unresolved complaints.', icon: 'rated' },
+  ] satisfies { title: string; body: string; icon: TrustIcon }[],
+
+  reviewsHeadline: 'Rated 4.9 by 1,200+ Central Texas homeowners',
 
   reviews: [
     {
@@ -221,13 +253,23 @@ export const site = {
     },
   ],
 
+  cta: {
+    headline: 'Get ahead of hail season.',
+    body: 'A free estimate takes ten minutes on site. Most quotes are in your inbox within 24 hours.',
+    image: 'https://images.unsplash.com/photo-1710139323182-69622cad5c3b',
+    imageAlt: 'Row of houses with new shingle roofs',
+  },
+
   /** Theme tokens. Change these to re-brand without touching components. */
   theme: {
-    primary: '#c2410c',
-    primaryDark: '#9a3412',
-    ink: '#0f172a',
-    /** Closest Whop Elements accent for the embedded checkout. */
+    primary: '#f47a2e',
+    primaryDark: '#e0651a',
+    ink: '#1a1512',
+    /** Page background (warm off-white). */
+    sand: '#f4f0ea',
+    /** Closest Whop Elements accent and gray for the embedded checkout. */
     checkoutAccent: 'orange' as const,
+    checkoutGray: 'sand' as const,
   },
 }
 
@@ -247,4 +289,10 @@ export function formatUsd(amount: number) {
     currency: 'USD',
     maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
   }).format(amount)
+}
+
+/** Sized, compressed image URL. Unsplash URLs get crop parameters; other URLs pass through. */
+export function photo(url: string, width: number, height?: number) {
+  if (!url.includes('images.unsplash.com')) return url
+  return `${url}?auto=format&fit=crop&q=70&w=${width}${height ? `&h=${height}` : ''}`
 }

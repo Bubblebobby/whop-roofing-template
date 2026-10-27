@@ -6,7 +6,7 @@ import { loadWhop } from '@whop/elements'
 import { site } from '#/site.config'
 
 export const checkoutAppearance: Appearance = {
-  theme: { appearance: 'light', accentColor: site.theme.checkoutAccent, grayColor: 'slate' },
+  theme: { appearance: 'light', accentColor: site.theme.checkoutAccent, grayColor: site.theme.checkoutGray },
 }
 
 /**
@@ -30,9 +30,9 @@ export function WhopProvider({ environment, children }: { environment: 'producti
 export function CheckoutSkeleton() {
   return (
     <div className="space-y-3" aria-busy="true" aria-label="Loading secure checkout">
-      <div className="h-12 animate-pulse rounded-lg bg-slate-100" />
-      <div className="h-40 animate-pulse rounded-lg bg-slate-100" />
-      <div className="h-12 animate-pulse rounded-lg bg-slate-100" />
+      <div className="h-12 animate-pulse rounded-lg bg-stone-100" />
+      <div className="h-40 animate-pulse rounded-lg bg-stone-100" />
+      <div className="h-12 animate-pulse rounded-lg bg-stone-100" />
     </div>
   )
 }

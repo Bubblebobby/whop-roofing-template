@@ -33,10 +33,10 @@ export function DepositCheckout({ offer, planId, accountId }: Props) {
       <Payments accountId={accountId} mode="setup" currency="usd" returnUrl={returnUrl} appearance={checkoutAppearance}>
         <DepositForm offer={offer} />
       </Payments>
-      <div className="flex items-center gap-3 pt-2 text-xs font-medium uppercase tracking-wider text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" />
+      <div className="flex items-center gap-3 pt-2 text-xs font-medium uppercase tracking-wider text-stone-400">
+        <span className="h-px flex-1 bg-stone-200" />
         or pay the deposit with a wallet
-        <span className="h-px flex-1 bg-slate-200" />
+        <span className="h-px flex-1 bg-stone-200" />
       </div>
       <Checkout
         plan={planId}
@@ -46,7 +46,7 @@ export function DepositCheckout({ offer, planId, accountId }: Props) {
       >
         <ExpressCheckoutElement layout="auto" />
       </Checkout>
-      <p className="text-center text-xs text-slate-500">Wallet deposits receive the final balance as an emailed invoice.</p>
+      <p className="text-center text-xs text-stone-500">Wallet deposits receive the final balance as an emailed invoice.</p>
     </div>
   )
 }
@@ -131,7 +131,7 @@ function DepositForm({ offer }: { offer: Offer }) {
     <div className="space-y-4">
       <EmailElement />
       <PaymentElement onChange={(e) => setComplete(e.complete)} />
-      <div className="rounded-lg bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
+      <div className="rounded-lg bg-stone-50 px-4 py-3 text-xs leading-relaxed text-stone-600">
         Your card is saved securely on file. You authorize {formatUsd(offer.price)} today and the remaining project balance
         after your final walkthrough, which is itemized on an invoice before it is charged.
       </div>

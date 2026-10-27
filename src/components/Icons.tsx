@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-import type { Service } from '#/site.config'
+import type { Service, TrustIcon as TrustIconName } from '#/site.config'
 
 type P = SVGProps<SVGSVGElement>
 const base = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
@@ -85,6 +85,30 @@ export function ServiceIcon({ name, ...p }: P & { name: Service['icon'] }) {
           <path d="M8 15c0 1.5-1 2.5-1 3.5a1 1 0 0 0 2 0c0-1-1-2-1-3.5z" />
         </svg>
       )
+  }
+}
+
+export function TrustIcon({ name, ...p }: P & { name: TrustIconName }) {
+  switch (name) {
+    case 'certified':
+      return (
+        <svg viewBox="0 0 24 24" {...base} {...p}>
+          <circle cx="12" cy="9" r="6" />
+          <path d="m9 9 2 2 4-4" />
+          <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
+        </svg>
+      )
+    case 'insured':
+      return <ShieldIcon {...p} />
+    case 'warranty':
+      return (
+        <svg viewBox="0 0 24 24" {...base} {...p}>
+          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" />
+        </svg>
+      )
+    case 'rated':
+      return <StarIcon {...p} />
   }
 }
 

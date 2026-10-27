@@ -42,7 +42,7 @@ Add `?debug=1` to any URL to open an on-page inspector that lists every `whop.tr
 
 ## Make it yours (no structural changes)
 
-Everything client-specific is in **`src/site.config.ts`**: company details, hero copy, services, offers and prices, service area, financing copy, trust badges, reviews, FAQ and brand colors. Services and offers are arrays; add, remove or reorder them and every section, page and checkout follows.
+Everything client-specific is in **`src/site.config.ts`**: company details, hero copy and photo, about statement, services (each with a photo), offers and prices, process steps, service area, financing copy, trust badges, reviews, FAQ, the closing call-to-action and brand colors. Photos are plain URLs; Unsplash URLs are resized automatically by `photo()`, and the defaults are free-license Unsplash images. Services and offers are arrays; add, remove or reorder them and every section, page and checkout follows.
 
 Whop IDs are **not** in code. They come from app secrets, so the same build works for any business:
 

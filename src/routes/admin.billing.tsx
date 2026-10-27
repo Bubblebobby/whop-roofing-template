@@ -88,11 +88,11 @@ function BillingPage() {
   }
 
   return (
-    <section className="bg-slate-50 py-10 sm:py-14">
+    <section className="page-top pb-10 sm:pb-14">
       <div className="container-x max-w-4xl">
         <p className="eyebrow">Office</p>
         <h1 className="h-display mt-2 text-4xl sm:text-5xl">Bill a final balance</h1>
-        <p className="mt-3 max-w-2xl text-slate-600">
+        <p className="mt-3 max-w-2xl text-stone-600">
           After the final walkthrough, invoice the contract total minus the deposit. Auto-charge the card saved at deposit
           checkout, or email the customer an invoice to pay online (financing options apply there too).
         </p>
@@ -119,7 +119,7 @@ function BillingPage() {
             <div>
               <h2 className="font-semibold">Cards on file from deposits</h2>
               <ul className="mt-3 space-y-2">
-                {rows.length === 0 && <li className="text-sm text-slate-500">No saved cards yet. Complete a deposit checkout first.</li>}
+                {rows.length === 0 && <li className="text-sm text-stone-500">No saved cards yet. Complete a deposit checkout first.</li>}
                 {rows.map((r) => (
                   <li key={r.setupIntentId}>
                     <button
@@ -128,11 +128,11 @@ function BillingPage() {
                         setSelected(r)
                         setMode('charge')
                       }}
-                      className={`card w-full p-4 text-left transition ${selected?.setupIntentId === r.setupIntentId ? 'border-brand ring-2 ring-brand/20' : 'hover:border-slate-300'}`}
+                      className={`card w-full p-4 text-left transition ${selected?.setupIntentId === r.setupIntentId ? 'border-brand ring-2 ring-brand/20' : 'hover:border-stone-300'}`}
                     >
                       <p className="font-medium">{r.customer ?? r.memberId}</p>
-                      <p className="text-sm text-slate-600">{r.card}</p>
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="text-sm text-stone-600">{r.card}</p>
+                      <p className="mt-1 text-xs text-stone-400">
                         Saved {new Date(r.createdAt).toLocaleString()} · {r.setupIntentId}
                       </p>
                     </button>
@@ -145,21 +145,21 @@ function BillingPage() {
             </div>
 
             <form className="card space-y-4 p-6" onSubmit={createInvoice}>
-              <div className="grid grid-cols-2 gap-2 rounded-lg bg-slate-100 p-1 text-sm font-medium">
+              <div className="grid grid-cols-2 gap-2 rounded-lg bg-stone-100 p-1 text-sm font-medium">
                 {(['charge', 'send'] as const).map((m) => (
                   <button
                     key={m}
                     type="button"
                     disabled={m === 'charge' && !selected}
                     onClick={() => setMode(m)}
-                    className={`rounded-md px-3 py-2 disabled:opacity-40 ${mode === m ? 'bg-white shadow-sm' : 'text-slate-600'}`}
+                    className={`rounded-md px-3 py-2 disabled:opacity-40 ${mode === m ? 'bg-white shadow-sm' : 'text-stone-600'}`}
                   >
                     {m === 'charge' ? 'Auto-charge card on file' : 'Email invoice'}
                   </button>
                 ))}
               </div>
               {selected ? (
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-stone-600">
                   Customer <span className="font-medium text-ink">{selected.customer ?? selected.memberId}</span> · {selected.card}
                 </p>
               ) : (

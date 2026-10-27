@@ -1,8 +1,8 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { getService, site } from '#/site.config'
+import { getService, photo, site } from '#/site.config'
 import { track } from '#/lib/track'
-import { CheckIcon, ServiceIcon } from '#/components/Icons'
+import { CheckIcon } from '#/components/Icons'
 import { ServiceCta } from '#/components/Sections'
 import { EstimateForm } from '#/components/EstimateForm'
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute('/services/$slug')({
   }),
   component: ServicePage,
   notFoundComponent: () => (
-    <div className="container-x py-24 text-center">
+    <div className="container-x page-top pb-24 text-center">
       <h1 className="h-display text-4xl">Service not found</h1>
       <Link to="/" hash="services" className="btn-primary mt-6">
         See all services
@@ -48,33 +48,32 @@ function ServicePage() {
 
   return (
     <>
-      <section className="roof-pattern bg-ink text-white">
-        <div className="container-x py-14 sm:py-20">
-          <nav className="text-sm text-slate-400" aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-white">
-              Home
-            </Link>{' '}
-            /{' '}
-            <Link to="/" hash="services" className="hover:text-white">
-              Services
-            </Link>{' '}
-            / <span className="text-slate-200">{service.name}</span>
-          </nav>
-          <div className="mt-6 flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-orange-300">
-              <ServiceIcon name={service.icon} className="h-7 w-7" />
+      <section className="p-2 sm:p-3">
+        <div className="relative isolate overflow-hidden rounded-[28px] bg-ink text-white">
+          <img src={photo(service.image, 2000)} alt={service.imageAlt} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <div className="photo-shade absolute inset-0 -z-10" />
+          <div className="container-x pb-12 pt-32 sm:pb-16 sm:pt-40">
+            <nav className="text-sm text-white/60" aria-label="Breadcrumb">
+              <Link to="/" className="hover:text-white">
+                Home
+              </Link>{' '}
+              /{' '}
+              <Link to="/" hash="services" className="hover:text-white">
+                Services
+              </Link>{' '}
+              / <span className="text-white">{service.name}</span>
+            </nav>
+            <span className="mt-6 inline-block rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-ink">{service.priceHint}</span>
+            <h1 className="h-display mt-4 text-5xl sm:text-7xl">{service.name}</h1>
+            <p className="mt-4 max-w-2xl text-lg text-white/80">{service.tagline}</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ServiceCta service={service} className="btn-primary px-6 py-3.5 text-base" />
+              {service.cta !== 'estimate' && (
+                <a href="#quote" className="btn-glass px-6 py-3.5 text-base">
+                  Or get a free estimate
+                </a>
+              )}
             </div>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-semibold">{service.priceHint}</span>
-          </div>
-          <h1 className="h-display mt-6 text-5xl sm:text-6xl">{service.name}</h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-300">{service.tagline}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ServiceCta service={service} className="btn-primary px-6 py-3.5 text-base" />
-            {service.cta !== 'estimate' && (
-              <a href="#quote" className="btn border border-white/25 px-6 py-3.5 text-base text-white hover:bg-white/10">
-                Or get a free estimate
-              </a>
-            )}
           </div>
         </div>
       </section>
@@ -82,8 +81,8 @@ function ServicePage() {
       <section className="py-16 sm:py-20">
         <div className="container-x grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <h2 className="text-2xl font-semibold">What’s included</h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-600">{service.description}</p>
+            <h2 className="h-display text-3xl">What’s included</h2>
+            <p className="mt-4 text-lg leading-relaxed text-stone-600">{service.description}</p>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {service.bullets.map((b) => (
                 <li key={b} className="card flex gap-3 p-4">
@@ -92,7 +91,7 @@ function ServicePage() {
                 </li>
               ))}
             </ul>
-            <h2 className="mt-14 text-2xl font-semibold">Other services</h2>
+            <h2 className="h-display mt-14 text-3xl">Other services</h2>
             <div className="mt-4 flex flex-wrap gap-3">
               {others.map((o) => (
                 <Link key={o.slug} to="/services/$slug" params={{ slug: o.slug }} className="btn-ghost">
@@ -101,7 +100,7 @@ function ServicePage() {
               ))}
             </div>
           </div>
-          <div id="quote" className="scroll-mt-24">
+          <div id="quote" className="scroll-mt-28">
             <EstimateForm defaultService={service.name} />
           </div>
         </div>

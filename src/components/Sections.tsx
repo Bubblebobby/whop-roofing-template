@@ -1,100 +1,123 @@
 import { Link } from '@tanstack/react-router'
-import { formatUsd, site } from '#/site.config'
+import { formatUsd, photo, site } from '#/site.config'
 import type { Offer, Service } from '#/site.config'
 import { track } from '#/lib/track'
 import { useOffer, useOffers } from '#/lib/offers'
-import { ArrowIcon, CardIcon, CheckIcon, PinIcon, ServiceIcon, ShieldIcon, StarIcon } from './Icons'
+import { ArrowIcon, CardIcon, CheckIcon, PinIcon, StarIcon, TrustIcon } from './Icons'
 import { EstimateForm } from './EstimateForm'
 import { telHref } from './SiteHeader'
 
-export function SectionHeading({ eyebrow, title, body, light }: { eyebrow: string; title: string; body?: string; light?: boolean }) {
+export function SectionHeading({
+  eyebrow,
+  title,
+  body,
+  light,
+  center,
+}: {
+  eyebrow: string
+  title: string
+  body?: string
+  light?: boolean
+  center?: boolean
+}) {
   return (
-    <div className="max-w-2xl">
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 className={`h-display mt-3 text-4xl sm:text-5xl ${light ? 'text-white' : 'text-ink'}`}>{title}</h2>
-      {body && <p className={`mt-4 text-lg leading-relaxed ${light ? 'text-slate-300' : 'text-slate-600'}`}>{body}</p>}
+    <div className={`max-w-2xl ${center ? 'mx-auto text-center' : ''}`}>
+      <p className={`${light ? 'eyebrow-dark' : 'eyebrow'} ${center ? 'mx-auto' : ''}`}>{eyebrow}</p>
+      <h2 className={`h-display mt-4 text-4xl sm:text-5xl ${light ? 'text-white' : 'text-ink'}`}>{title}</h2>
+      {body && <p className={`mt-4 text-lg leading-relaxed ${light ? 'text-white/70' : 'text-stone-600'}`}>{body}</p>}
     </div>
   )
 }
 
+function Stars({ count = 5, className = 'h-4 w-4' }: { count?: number; className?: string }) {
+  return (
+    <div className="flex gap-0.5 text-brand" aria-label={`${count} out of 5 stars`}>
+      {Array.from({ length: count }).map((_, i) => (
+        <StarIcon key={i} className={className} />
+      ))}
+    </div>
+  )
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+}
+
 export function Hero() {
   const inspection = useOffer('inspection')
+  const review = site.reviews[0]
   return (
-    <section className="roof-pattern relative overflow-hidden bg-ink text-white">
-      <div className="container-x grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:py-28">
-        <div>
-          <p className="eyebrow text-orange-300">{site.hero.eyebrow}</p>
-          <h1 className="h-display mt-4 text-5xl sm:text-6xl lg:text-7xl">{site.hero.headline}</h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">{site.hero.subhead}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a href="#estimate" className="btn-primary px-6 py-3.5 text-base">
-              Get a free estimate <ArrowIcon className="h-4 w-4" />
-            </a>
-            <Link to="/book/$offer" params={{ offer: 'inspection' }} className="btn border border-white/25 px-6 py-3.5 text-base text-white hover:bg-white/10">
-              Book a {formatUsd(inspection?.price ?? 0)} inspection
-            </Link>
+    <section className="p-2 sm:p-3">
+      <div className="relative isolate flex min-h-[640px] overflow-hidden rounded-[28px] bg-ink text-white sm:min-h-[720px] lg:min-h-[780px]">
+        <img
+          src={photo(site.hero.image, 2000)}
+          srcSet={`${photo(site.hero.image, 900)} 900w, ${photo(site.hero.image, 1400)} 1400w, ${photo(site.hero.image, 2000)} 2000w`}
+          sizes="100vw"
+          alt={site.hero.imageAlt}
+          fetchPriority="high"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        <div className="photo-shade absolute inset-0 -z-10" />
+        <div className="container-x grid w-full items-end gap-10 pb-10 pt-32 sm:pb-14 lg:grid-cols-[1.35fr_0.65fr] lg:pb-16">
+          <div>
+            <p className="eyebrow-dark">{site.hero.eyebrow}</p>
+            <h1 className="h-display mt-5 text-5xl sm:text-6xl lg:text-[82px]">{site.hero.headline}</h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80">{site.hero.subhead}</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a href="#estimate" className="btn-primary px-6 py-3.5 text-base">
+                Get a free estimate <ArrowIcon className="h-4 w-4" />
+              </a>
+              <Link to="/book/$offer" params={{ offer: 'inspection' }} className="btn-glass px-6 py-3.5 text-base">
+                Book a {formatUsd(inspection?.price ?? 0)} inspection
+              </Link>
+            </div>
           </div>
-          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/10 pt-8">
-            {site.hero.stats.map((s) => (
-              <div key={s.label}>
-                <dt className="sr-only">{s.label}</dt>
-                <dd className="h-display text-3xl text-white sm:text-4xl">{s.value}</dd>
-                <dd className="mt-1 text-xs text-slate-400 sm:text-sm">{s.label}</dd>
-              </div>
-            ))}
-          </dl>
+          {review && (
+            <figure className="hidden rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur-md lg:block">
+              <Stars />
+              <p className="mt-2 text-sm font-semibold text-white">{site.reviewsHeadline}</p>
+              <blockquote className="mt-4 line-clamp-4 text-[15px] leading-relaxed text-white/80">“{review.text}”</blockquote>
+              <figcaption className="mt-5 flex items-center gap-3 text-sm">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-semibold text-ink">{initials(review.name)}</span>
+                <span>
+                  <span className="block font-semibold">{review.name}</span>
+                  <span className="text-white/60">
+                    {review.city} · {review.service}
+                  </span>
+                </span>
+              </figcaption>
+            </figure>
+          )}
         </div>
-        <HeroArt />
       </div>
     </section>
   )
 }
 
-function HeroArt() {
+export function About() {
   return (
-    <div className="relative hidden lg:block" aria-hidden="true">
-      <svg viewBox="0 0 420 360" className="w-full drop-shadow-2xl">
-        <defs>
-          <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#1e293b" />
-            <stop offset="1" stopColor="#334155" />
-          </linearGradient>
-          <pattern id="shingle" width="22" height="14" patternUnits="userSpaceOnUse">
-            <rect width="22" height="14" fill="#1f2937" />
-            <path d="M0 13.5h22M11 0v7M0 7h22M0 7v7M22 7v7" stroke="#0b1220" strokeWidth="1.2" />
-          </pattern>
-        </defs>
-        <rect x="10" y="10" width="400" height="340" rx="28" fill="url(#sky)" />
-        <path d="M60 190 210 70l150 120z" fill="url(#shingle)" />
-        <path d="M60 190 210 70l150 120" fill="none" stroke="var(--brand)" strokeWidth="10" strokeLinejoin="round" strokeLinecap="round" />
-        <rect x="90" y="190" width="240" height="130" fill="#e2e8f0" />
-        <rect x="185" y="245" width="50" height="75" rx="4" fill="#475569" />
-        <rect x="112" y="215" width="48" height="40" rx="3" fill="#94a3b8" />
-        <rect x="260" y="215" width="48" height="40" rx="3" fill="#94a3b8" />
-        <rect x="280" y="96" width="24" height="54" fill="#64748b" />
-        <g transform="translate(282 250)">
-          <rect width="118" height="78" rx="14" fill="#fff" />
-          <text x="16" y="30" fontFamily="Inter, sans-serif" fontSize="12" fill="#64748b">Warranty</text>
-          <text x="16" y="58" fontFamily="Barlow Condensed, sans-serif" fontWeight="700" fontSize="28" fill="#0f172a">25 YEARS</text>
-        </g>
-      </svg>
-    </div>
-  )
-}
-
-export function TrustStrip() {
-  return (
-    <section className="border-b border-slate-200 bg-slate-50">
-      <div className="container-x grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
-        {site.trust.map((t) => (
-          <div key={t.title} className="flex gap-3">
-            <ShieldIcon className="mt-0.5 h-6 w-6 shrink-0 text-brand" />
-            <div>
-              <p className="font-semibold text-ink">{t.title}</p>
-              <p className="text-sm text-slate-600">{t.body}</p>
-            </div>
+    <section className="py-20 sm:py-28">
+      <div className="container-x">
+        <div className="grid gap-6 lg:grid-cols-[0.3fr_1fr]">
+          <div>
+            <p className="eyebrow">{site.about.eyebrow}</p>
           </div>
-        ))}
+          <p className="font-display text-2xl font-medium leading-snug tracking-[-0.02em] text-ink sm:text-3xl lg:text-[40px] lg:leading-[1.2]">
+            {site.about.statement}
+          </p>
+        </div>
+        <dl className="mt-14 grid grid-cols-1 divide-y divide-ink/10 border-y border-ink/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          {site.hero.stats.map((s) => (
+            <div key={s.label} className="flex items-baseline justify-between gap-4 px-1 py-6 sm:block sm:px-8 sm:first:pl-0">
+              <dt className="order-2 text-sm text-stone-500 sm:mt-1">{s.label}</dt>
+              <dd className="h-display text-4xl sm:text-5xl">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   )
@@ -124,41 +147,106 @@ export function ServiceCta({ service, className = 'btn-primary' }: { service: Se
 
 export function Services() {
   return (
-    <section id="services" className="py-20 sm:py-24">
+    <section id="services" className="pb-20 sm:pb-28">
       <div className="container-x">
-        <SectionHeading
-          eyebrow="Services"
-          title="Repair, replace, inspect."
-          body="Every job is run by a certified crew lead and backed by a written warranty. Pick a service to see what’s included."
-        />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <SectionHeading eyebrow="Services" title="Every roofing job, one accountable crew." />
+          <p className="max-w-sm text-stone-600">
+            Each job is run by a certified crew lead and backed by a written warranty. Pick a service to see what’s included.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {site.services.map((s) => (
-            <article key={s.slug} className="card group flex flex-col p-6 transition hover:border-slate-300 hover:shadow-lg sm:p-7">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-brand">
-                  <ServiceIcon name={s.icon} className="h-6 w-6" />
+            <Link
+              key={s.slug}
+              to="/services/$slug"
+              params={{ slug: s.slug }}
+              className="group relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-3xl bg-ink p-5 text-white"
+            >
+              <img
+                src={photo(s.image, 700, 875)}
+                alt={s.imageAlt}
+                loading="lazy"
+                className="absolute inset-0 -z-10 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+              <div className="photo-shade absolute inset-0 -z-10" />
+              <span className="self-start rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-ink">{s.priceHint}</span>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <h3 className="font-display text-2xl font-semibold tracking-tight">{s.name}</h3>
+                  <p className="mt-1 text-sm leading-snug text-white/75">{s.tagline}</p>
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{s.priceHint}</span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-ink transition group-hover:-rotate-45 group-hover:bg-brand">
+                  <ArrowIcon className="h-4 w-4" />
+                </span>
               </div>
-              <h3 className="mt-5 text-xl font-semibold">{s.name}</h3>
-              <p className="mt-2 text-slate-600">{s.tagline}</p>
-              <ul className="mt-4 space-y-2 text-sm text-slate-700">
-                {s.bullets.slice(0, 3).map((b) => (
-                  <li key={b} className="flex gap-2">
-                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
-                <Link to="/services/$slug" params={{ slug: s.slug }} className="btn-ghost">
-                  Details
-                </Link>
-                <ServiceCta service={s} />
-              </div>
-            </article>
+            </Link>
           ))}
         </div>
+        <p className="mt-8 text-center text-sm text-stone-600">
+          Not sure what you need?{' '}
+          <a href="#estimate" className="font-semibold text-ink underline decoration-brand decoration-2 underline-offset-4">
+            Get a free estimate
+          </a>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+export function WhyUs() {
+  return (
+    <section className="bg-white py-20 sm:py-28">
+      <div className="container-x grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+        <div className="relative min-h-[360px] overflow-hidden rounded-3xl bg-ink lg:min-h-0">
+          <img src={photo(site.about.image, 900)} alt={site.about.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl bg-white/95 p-4 shadow-lg backdrop-blur">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand text-ink">
+              <TrustIcon name="warranty" className="h-5 w-5" />
+            </span>
+            <p className="text-sm">
+              <span className="block font-semibold text-ink">Written warranty on every roof</span>
+              <span className="text-stone-500">Transferable if you sell your home</span>
+            </p>
+          </div>
+        </div>
+        <div>
+          <SectionHeading
+            eyebrow="Why homeowners choose us"
+            title="Roofing without the runaround."
+            body="Our own crews, a fixed price in writing, and a warranty that stays with the house."
+          />
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {site.trust.map((t) => (
+              <div key={t.title} className="rounded-3xl bg-sand p-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-white">
+                  <TrustIcon name={t.icon} className="h-5 w-5" />
+                </span>
+                <p className="mt-8 font-display text-lg font-semibold tracking-tight">{t.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-stone-600">{t.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export function Process() {
+  return (
+    <section className="py-20 sm:py-28">
+      <div className="container-x">
+        <SectionHeading eyebrow="How it works" title="From first call to final walkthrough." center />
+        <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {site.process.map((step, i) => (
+            <li key={step.title} className="card flex flex-col p-7">
+              <span className="h-display text-5xl text-brand">{String(i + 1).padStart(2, '0')}</span>
+              <p className="mt-10 font-display text-xl font-semibold tracking-tight">{step.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-stone-600">{step.body}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   )
@@ -167,31 +255,29 @@ export function Services() {
 export function OfferCard({ offer }: { offer: Offer }) {
   const featured = !!offer.badge
   return (
-    <article
-      className={`relative flex flex-col rounded-2xl border p-6 sm:p-7 ${
-        featured ? 'border-ink bg-ink text-white shadow-xl' : 'border-slate-200 bg-white'
-      }`}
-    >
-      {offer.badge && (
-        <span className="absolute -top-3 left-6 rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">{offer.badge}</span>
-      )}
-      <h3 className="text-lg font-semibold">{offer.name}</h3>
-      <p className={`mt-2 text-sm ${featured ? 'text-slate-300' : 'text-slate-600'}`}>{offer.summary}</p>
-      <p className="mt-6 flex items-baseline gap-2">
-        <span className="h-display text-5xl">{formatUsd(offer.price)}</span>
-        <span className={`text-sm ${featured ? 'text-slate-400' : 'text-slate-500'}`}>{offer.priceNote}</span>
+    <article className={`relative flex flex-col rounded-3xl p-7 ${featured ? 'bg-ink text-white shadow-2xl lg:-my-4 lg:py-11' : 'bg-sand'}`}>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-display text-xl font-semibold tracking-tight">{offer.name}</h3>
+        {offer.badge && <span className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-ink">{offer.badge}</span>}
+      </div>
+      <p className={`mt-2 text-sm leading-relaxed ${featured ? 'text-white/70' : 'text-stone-600'}`}>{offer.summary}</p>
+      <p className="mt-8">
+        <span className="h-display text-6xl">{formatUsd(offer.price)}</span>
+        <span className={`mt-1 block text-sm ${featured ? 'text-white/55' : 'text-stone-500'}`}>{offer.priceNote}</span>
       </p>
-      <ul className={`mt-6 space-y-2.5 text-sm ${featured ? 'text-slate-200' : 'text-slate-700'}`}>
+      <ul className={`mt-8 space-y-3 border-t pt-6 text-sm ${featured ? 'border-white/10 text-white/85' : 'border-ink/10 text-stone-700'}`}>
         {offer.includes.map((i) => (
-          <li key={i} className="flex gap-2">
+          <li key={i} className="flex gap-2.5">
             <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
             {i}
           </li>
         ))}
       </ul>
-      <Link to="/book/$offer" params={{ offer: offer.key }} className={`mt-8 ${featured ? 'btn-primary' : 'btn-dark'}`}>
-        {offer.key === 'deposit' ? 'Pay deposit' : 'Book now'}
-      </Link>
+      <div className="mt-auto pt-8">
+        <Link to="/book/$offer" params={{ offer: offer.key }} className={`w-full ${featured ? 'btn-primary' : 'btn-dark'}`}>
+          {offer.key === 'deposit' ? 'Pay deposit' : 'Book now'} <ArrowIcon className="h-4 w-4" />
+        </Link>
+      </div>
     </article>
   )
 }
@@ -199,29 +285,30 @@ export function OfferCard({ offer }: { offer: Offer }) {
 export function Pricing() {
   const offers = useOffers()
   return (
-    <section id="pricing" className="bg-slate-50 py-20 sm:py-24">
+    <section id="pricing" className="bg-white py-20 sm:py-28">
       <div className="container-x">
         <SectionHeading
           eyebrow="Upfront pricing"
           title="Book online in two minutes."
           body="Pay securely with card, Apple Pay or Google Pay. Bigger projects start with a deposit; the balance is invoiced after your final walkthrough."
+          center
         />
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-14 grid items-stretch gap-4 lg:grid-cols-3">
           {offers.map((o) => (
             <OfferCard key={o.key} offer={o} />
           ))}
         </div>
-        <ol className="mt-12 grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-sm sm:grid-cols-3">
+        <ol className="mt-12 grid gap-6 rounded-3xl border border-ink/10 p-6 text-sm sm:grid-cols-3 sm:p-8">
           {[
-            ['1', 'Deposit', 'Pay the deposit online. Your card is securely saved on file.'],
-            ['2', 'Install', 'We install your roof, usually in a single day, then walk the job with you.'],
-            ['3', 'Final invoice', 'The balance, minus your deposit, is auto-charged or emailed as an invoice.'],
-          ].map(([n, t, b]) => (
-            <li key={n} className="flex gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white">{n}</span>
+            ['Deposit', 'Pay the deposit online. Your card is securely saved on file.'],
+            ['Install', 'We install your roof, usually in a single day, then walk the job with you.'],
+            ['Final invoice', 'The balance, minus your deposit, is auto-charged or emailed as an invoice.'],
+          ].map(([t, b], i) => (
+            <li key={t} className="flex gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sand text-sm font-semibold text-ink">{i + 1}</span>
               <div>
                 <p className="font-semibold">{t}</p>
-                <p className="text-slate-600">{b}</p>
+                <p className="mt-0.5 text-stone-600">{b}</p>
               </div>
             </li>
           ))}
@@ -232,40 +319,46 @@ export function Pricing() {
 }
 
 export function Financing() {
+  const deposit = useOffer('deposit')
+  const exampleTotal = 14000
+  const depositAmount = deposit?.price ?? 0
   return (
-    <section id="financing" className="py-20 sm:py-24">
+    <section id="financing" className="py-20 sm:py-28">
       <div className="container-x">
-        <div className="grid items-center gap-10 overflow-hidden rounded-3xl bg-gradient-to-br from-orange-50 to-amber-50 p-8 sm:p-12 lg:grid-cols-2">
+        <div className="grid items-center gap-10 rounded-[32px] bg-brand p-8 text-ink sm:p-12 lg:grid-cols-[1.1fr_0.9fr] lg:p-16">
           <div>
             <p className="eyebrow">Financing</p>
-            <h2 className="h-display mt-3 text-4xl sm:text-5xl">{site.financing.headline}</h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-700">{site.financing.body}</p>
-            <ul className="mt-6 flex flex-wrap gap-2">
+            <h2 className="h-display mt-4 text-4xl sm:text-5xl">{site.financing.headline}</h2>
+            <p className="mt-4 text-lg leading-relaxed text-ink/80">{site.financing.body}</p>
+            <ul className="mt-8 flex flex-wrap gap-2">
               {site.financing.points.map((p) => (
-                <li key={p} className="rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm">
+                <li key={p} className="flex items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-sm font-medium text-white">
+                  <CheckIcon className="h-3.5 w-3.5 text-brand" />
                   {p}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="card p-6 shadow-sm">
+          <div className="rounded-3xl bg-white p-6 shadow-xl sm:p-7">
             <div className="flex items-center gap-3">
-              <CardIcon className="h-6 w-6 text-brand" />
-              <p className="font-semibold">Example: {formatUsd(14000)} replacement</p>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sand">
+                <CardIcon className="h-5 w-5 text-ink" />
+              </span>
+              <p className="font-semibold">Example: {formatUsd(exampleTotal)} replacement</p>
             </div>
-            <dl className="mt-5 divide-y divide-slate-100 text-sm">
+            <dl className="mt-5 divide-y divide-ink/10 text-sm">
               {[
-                ['Deposit today', formatUsd(500)],
-                ['Balance after install', formatUsd(13500)],
+                ['Deposit today', formatUsd(depositAmount)],
+                ['Balance after install', formatUsd(exampleTotal - depositAmount)],
                 ['Or pay over time', 'Monthly options at checkout*'],
               ].map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-4 py-3">
-                  <dt className="text-slate-600">{k}</dt>
+                <div key={k} className="flex justify-between gap-4 py-3.5">
+                  <dt className="text-stone-600">{k}</dt>
                   <dd className="text-right font-semibold">{v}</dd>
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-xs text-slate-500">
+            <p className="mt-4 text-xs leading-relaxed text-stone-500">
               *Pay-over-time options are provided by third-party lenders, subject to eligibility, and appear automatically in checkout when available.
             </p>
           </div>
@@ -277,23 +370,21 @@ export function Financing() {
 
 export function Reviews() {
   return (
-    <section id="reviews" className="bg-ink py-20 text-white sm:py-24">
+    <section id="reviews" className="bg-white py-20 sm:py-28">
       <div className="container-x">
-        <SectionHeading eyebrow="Reviews" title="Neighbors who stopped worrying about their roof." light />
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <SectionHeading eyebrow="Reviews" title={site.reviewsHeadline} center />
+        <div className="mt-14 grid gap-4 md:grid-cols-3">
           {site.reviews.map((r) => (
-            <figure key={r.name} className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="flex gap-0.5 text-amber-400" aria-label={`${r.rating} out of 5 stars`}>
-                {Array.from({ length: r.rating }).map((_, i) => (
-                  <StarIcon key={i} className="h-4 w-4" />
-                ))}
-              </div>
-              <blockquote className="mt-4 flex-1 leading-relaxed text-slate-200">“{r.text}”</blockquote>
-              <figcaption className="mt-6 text-sm">
-                <span className="font-semibold text-white">{r.name}</span>
-                <span className="text-slate-400">
-                  {' '}
-                  · {r.city} · {r.service}
+            <figure key={r.name} className="flex flex-col rounded-3xl bg-sand p-7">
+              <Stars count={r.rating} />
+              <blockquote className="mt-5 flex-1 text-[17px] leading-relaxed text-ink">“{r.text}”</blockquote>
+              <figcaption className="mt-8 flex items-center gap-3 text-sm">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white">{initials(r.name)}</span>
+                <span>
+                  <span className="block font-semibold text-ink">{r.name}</span>
+                  <span className="text-stone-500">
+                    {r.city} · {r.service}
+                  </span>
                 </span>
               </figcaption>
             </figure>
@@ -307,14 +398,14 @@ export function Reviews() {
 export function ServiceArea() {
   const { serviceArea } = site
   return (
-    <section id="area" className="py-20 sm:py-24">
+    <section id="area" className="py-20 sm:py-28">
       <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-center">
         <div>
           <SectionHeading eyebrow="Service area" title={serviceArea.headline} body={serviceArea.blurb} />
-          <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+          <ul className="mt-8 flex flex-wrap gap-2">
             {serviceArea.cities.map((c) => (
-              <li key={c} className="flex items-center gap-2 text-slate-700">
-                <PinIcon className="h-4 w-4 shrink-0 text-brand" />
+              <li key={c} className="flex items-center gap-1.5 rounded-full border border-ink/10 bg-white px-3.5 py-2 text-sm text-stone-700">
+                <PinIcon className="h-3.5 w-3.5 shrink-0 text-brand" />
                 {c}
               </li>
             ))}
@@ -324,14 +415,16 @@ export function ServiceArea() {
           {[100, 75, 50, 25].map((pct, i) => (
             <div
               key={pct}
-              className="absolute rounded-full border border-dashed border-orange-300"
-              style={{ inset: `${(100 - pct) / 2}%`, background: `rgb(234 88 12 / ${0.03 + i * 0.03})` }}
+              className="absolute rounded-full border border-dashed border-brand/40"
+              style={{ inset: `${(100 - pct) / 2}%`, background: `color-mix(in srgb, var(--brand) ${4 + i * 4}%, transparent)` }}
             />
           ))}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <PinIcon className="h-10 w-10 text-brand" />
-            <p className="h-display mt-2 text-3xl">{serviceArea.radiusMiles}-mile radius</p>
-            <p className="text-sm text-slate-500">{site.company.address.split(',').slice(-2).join(',').trim()}</p>
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ink text-white shadow-lg">
+              <PinIcon className="h-6 w-6" />
+            </span>
+            <p className="h-display mt-3 text-3xl">{serviceArea.radiusMiles}-mile radius</p>
+            <p className="text-sm text-stone-500">{site.company.address.split(',').slice(-2).join(',').trim()}</p>
           </div>
         </div>
       </div>
@@ -341,17 +434,20 @@ export function ServiceArea() {
 
 export function Faq() {
   return (
-    <section className="bg-slate-50 py-20 sm:py-24">
+    <section className="bg-ink py-20 text-white sm:py-28">
       <div className="container-x grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <SectionHeading eyebrow="FAQ" title="Questions, answered." />
-        <div className="divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
-          {site.faq.map((f) => (
-            <details key={f.q} className="group p-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
-                {f.q}
-                <span className="text-xl text-brand transition group-open:rotate-45">+</span>
+        <SectionHeading eyebrow="FAQ" title="Questions, answered." body="Still unsure? Call us and a project manager will walk you through it." light />
+        <div className="border-t border-white/10">
+          {site.faq.map((f, i) => (
+            <details key={f.q} className="group border-b border-white/10 py-6" open={i === 0}>
+              <summary className="flex cursor-pointer list-none items-center gap-5 [&::-webkit-details-marker]:hidden">
+                <span className="text-sm tabular-nums text-white/40">{String(i + 1).padStart(2, '0')}</span>
+                <span className="flex-1 font-display text-lg font-semibold tracking-tight sm:text-xl">{f.q}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-lg text-ink transition group-open:rotate-45 group-open:bg-brand">
+                  +
+                </span>
               </summary>
-              <p className="mt-3 leading-relaxed text-slate-600">{f.a}</p>
+              <p className="mt-4 max-w-xl pl-10 leading-relaxed text-white/65">{f.a}</p>
             </details>
           ))}
         </div>
@@ -362,9 +458,9 @@ export function Faq() {
 
 export function Contact() {
   return (
-    <section id="contact" className="py-20 sm:py-24">
+    <section id="contact" className="py-20 sm:py-28">
       <div className="container-x grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <div id="estimate" className="scroll-mt-24">
+        <div id="estimate" className="scroll-mt-28">
           <SectionHeading
             eyebrow="Contact"
             title="Free, no-pressure estimates."
@@ -373,24 +469,58 @@ export function Contact() {
           <a
             href={telHref()}
             onClick={() => track('contact', { method: 'phone', location: 'contact' })}
-            className="h-display mt-6 inline-block text-4xl text-brand hover:text-brand-dark"
+            className="h-display mt-6 inline-block text-4xl text-ink underline decoration-brand decoration-[3px] underline-offset-[6px] hover:text-brand-dark"
           >
             {site.company.phone}
           </a>
-          <dl className="mt-8 space-y-4 text-sm">
+          <dl className="mt-10 grid gap-5 text-sm sm:grid-cols-3 lg:grid-cols-1">
             {[
               ['Email', site.company.email],
               ['Office', site.company.address],
               ['Hours', site.company.hours],
             ].map(([k, v]) => (
               <div key={k}>
-                <dt className="font-semibold text-ink">{k}</dt>
-                <dd className="text-slate-600">{v}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">{k}</dt>
+                <dd className="mt-1 break-words text-ink">{v}</dd>
               </div>
             ))}
           </dl>
         </div>
         <EstimateForm />
+      </div>
+    </section>
+  )
+}
+
+export function CtaBand() {
+  return (
+    <section className="p-2 pb-4 sm:p-3 sm:pb-6">
+      <div className="relative isolate overflow-hidden rounded-[28px] bg-ink text-white">
+        <img src={photo(site.cta.image, 1800)} alt={site.cta.imageAlt} loading="lazy" className="absolute inset-0 -z-10 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 bg-ink/60" />
+        <div className="container-x py-20 text-center sm:py-28">
+          <h2 className="h-display mx-auto max-w-3xl text-4xl sm:text-6xl">{site.cta.headline}</h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-white/80">{site.cta.body}</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <a href="#estimate" className="btn-primary px-6 py-3.5 text-base">
+              Get a free estimate <ArrowIcon className="h-4 w-4" />
+            </a>
+            <a href={telHref()} onClick={() => track('contact', { method: 'phone', location: 'cta_band' })} className="btn-glass px-6 py-3.5 text-base">
+              Call {site.company.phone}
+            </a>
+          </div>
+        </div>
+        <ul className="grid border-t border-white/15 bg-black/30 backdrop-blur sm:grid-cols-3">
+          {site.trust.slice(0, 3).map((t) => (
+            <li key={t.title} className="flex items-center gap-3 border-white/15 px-6 py-5 text-sm sm:border-l sm:first:border-l-0 [&+&]:border-t sm:[&+&]:border-t-0">
+              <TrustIcon name={t.icon} className="h-5 w-5 shrink-0 text-brand" />
+              <span>
+                <span className="block font-semibold">{t.title}</span>
+                <span className="text-white/60">{t.body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

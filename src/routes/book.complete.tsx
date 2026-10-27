@@ -64,7 +64,7 @@ function CompletePage() {
   }, [view, search.setup])
 
   return (
-    <section className="bg-slate-50 py-16 sm:py-24">
+    <section className="page-top pb-16 sm:pb-24">
       <div className="container-x max-w-xl">
         <div className="card p-8 text-center sm:p-10">
           {view === 'success' && (
@@ -73,31 +73,31 @@ function CompletePage() {
                 <CheckIcon className="h-7 w-7" />
               </div>
               <h1 className="h-display mt-5 text-4xl">You’re booked</h1>
-              <p className="mt-3 text-slate-600">
+              <p className="mt-3 text-stone-600">
                 {offer?.key === 'deposit'
                   ? 'Your deposit is paid and your card is on file. A project manager will call within one business day to confirm your install date.'
                   : `Thanks! Your ${offer?.name.toLowerCase() ?? 'booking'} is confirmed. We will call within one business day to schedule.`}
               </p>
-              <p className="mt-2 text-sm text-slate-500">A receipt is on its way to your email.</p>
+              <p className="mt-2 text-sm text-stone-500">A receipt is on its way to your email.</p>
             </>
           )}
           {view === 'finishing' && (
             <>
-              <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-brand" />
+              <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-stone-200 border-t-brand" />
               <h1 className="h-display mt-5 text-4xl">Finishing your deposit…</h1>
-              <p className="mt-3 text-slate-600">Your card was verified. Charging the deposit now.</p>
+              <p className="mt-3 text-stone-600">Your card was verified. Charging the deposit now.</p>
             </>
           )}
           {view === 'pending' && (
             <>
               <h1 className="h-display text-4xl">Confirming your payment</h1>
-              <p className="mt-3 text-slate-600">Your payment is still processing. We will email you as soon as it is confirmed.</p>
+              <p className="mt-3 text-stone-600">Your payment is still processing. We will email you as soon as it is confirmed.</p>
             </>
           )}
           {view === 'failed' && (
             <>
               <h1 className="h-display text-4xl">Payment didn’t go through</h1>
-              <p className="mt-3 text-slate-600">{error ?? 'No money was taken. You can try again with another payment method.'}</p>
+              <p className="mt-3 text-stone-600">{error ?? 'No money was taken. You can try again with another payment method.'}</p>
               {offer && (
                 <Link to="/book/$offer" params={{ offer: offer.key }} className="btn-primary mt-6">
                   Try again
@@ -105,8 +105,8 @@ function CompletePage() {
               )}
             </>
           )}
-          {paymentId && <p className="mt-6 text-xs text-slate-400">Reference {paymentId}</p>}
-          <div className="mt-8 flex flex-col justify-center gap-3 border-t border-slate-100 pt-6 sm:flex-row">
+          {paymentId && <p className="mt-6 text-xs text-stone-400">Reference {paymentId}</p>}
+          <div className="mt-8 flex flex-col justify-center gap-3 border-t border-stone-100 pt-6 sm:flex-row">
             <Link to="/" className="btn-ghost">
               Back to home
             </Link>
