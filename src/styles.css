@@ -93,3 +93,18 @@ body {
 @utility photo-shade {
   background: linear-gradient(180deg, rgb(0 0 0 / 0.35) 0%, rgb(0 0 0 / 0.05) 35%, rgb(0 0 0 / 0.7) 100%);
 }
+/* Heroes with text over a photo: darken behind the copy so it reads on any image.
+   Phones stack the copy full-width, so they get an even darker wash. */
+@utility photo-shade-hero {
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.45) 0%, rgb(0 0 0 / 0.35) 40%, rgb(0 0 0 / 0.8) 100%),
+    rgb(0 0 0 / 0.15);
+  @media (width >= 64rem) {
+    background:
+      linear-gradient(90deg, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.55) 40%, rgb(0 0 0 / 0.1) 75%),
+      linear-gradient(180deg, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0.5) 100%);
+  }
+}
+@utility text-on-photo {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 2px 18px rgb(0 0 0 / 0.35);
+}

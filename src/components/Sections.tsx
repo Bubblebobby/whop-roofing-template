@@ -61,12 +61,12 @@ export function Hero() {
           fetchPriority="high"
           className="absolute inset-0 -z-10 h-full w-full object-cover"
         />
-        <div className="photo-shade absolute inset-0 -z-10" />
+        <div className="photo-shade-hero absolute inset-0 -z-10" />
         <div className="container-x grid w-full items-end gap-10 pb-10 pt-32 sm:pb-14 lg:grid-cols-[1.35fr_0.65fr] lg:pb-16">
           <div>
             <p className="eyebrow-dark">{site.hero.eyebrow}</p>
-            <h1 className="h-display mt-5 text-5xl sm:text-6xl lg:text-[82px]">{site.hero.headline}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80">{site.hero.subhead}</p>
+            <h1 className="h-display text-on-photo mt-5 text-5xl sm:text-6xl lg:text-[82px]">{site.hero.headline}</h1>
+            <p className="text-on-photo mt-6 max-w-xl text-lg leading-relaxed text-white/90">{site.hero.subhead}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href="#estimate" className="btn-primary px-6 py-3.5 text-base">
                 Get a free estimate <ArrowIcon className="h-4 w-4" />
@@ -77,7 +77,7 @@ export function Hero() {
             </div>
           </div>
           {review && (
-            <figure className="hidden rounded-3xl border border-white/15 bg-white/10 p-6 backdrop-blur-md lg:block">
+            <figure className="hidden rounded-3xl border border-white/15 bg-black/35 p-6 backdrop-blur-md lg:block">
               <Stars />
               <p className="mt-2 text-sm font-semibold text-white">{site.reviewsHeadline}</p>
               <blockquote className="mt-4 line-clamp-4 text-[15px] leading-relaxed text-white/80">“{review.text}”</blockquote>

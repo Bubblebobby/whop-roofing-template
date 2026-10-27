@@ -51,7 +51,7 @@ function ServicePage() {
       <section className="p-2 sm:p-3">
         <div className="relative isolate overflow-hidden rounded-[28px] bg-ink text-white">
           <img src={photo(service.image, 2000)} alt={service.imageAlt} className="absolute inset-0 -z-10 h-full w-full object-cover" />
-          <div className="photo-shade absolute inset-0 -z-10" />
+          <div className="photo-shade-hero absolute inset-0 -z-10" />
           <div className="container-x pb-12 pt-32 sm:pb-16 sm:pt-40">
             <nav className="text-sm text-white/60" aria-label="Breadcrumb">
               <Link to="/" className="hover:text-white">
@@ -64,8 +64,8 @@ function ServicePage() {
               / <span className="text-white">{service.name}</span>
             </nav>
             <span className="mt-6 inline-block rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-ink">{service.priceHint}</span>
-            <h1 className="h-display mt-4 text-5xl sm:text-7xl">{service.name}</h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/80">{service.tagline}</p>
+            <h1 className="h-display text-on-photo mt-4 text-5xl sm:text-7xl">{service.name}</h1>
+            <p className="text-on-photo mt-4 max-w-2xl text-lg text-white/90">{service.tagline}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ServiceCta service={service} className="btn-primary px-6 py-3.5 text-base" />
               {service.cta !== 'estimate' && (
