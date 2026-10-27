@@ -1,6 +1,7 @@
 # Whop Roofing Template
 
 **Live demo:** https://summitridge-roof-7k2q.whop.site (test mode: every plan charges $1)
+**Source:** https://github.com/Bubblebobby/whop-roofing-template
 
 A production-ready website template for US roofing contractors, built on **Whop Websites** (TanStack Start on Whop hosting) and **Whop Payments**. It covers the full high-ticket flow:
 

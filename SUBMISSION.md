@@ -4,7 +4,7 @@
 
 Hosted on Whop Websites with `whop apps deploy`. Whop serves website apps on a `*.whop.site` address (or a domain the business owns); `whop.app` addresses aren't offered for websites, so this is the site's Whop-hosted URL.
 
-**Source:** _add the repository link here_
+**Source:** https://github.com/Bubblebobby/whop-roofing-template
 
 **Recording:** _add the 3–5 minute video link here_
 
@@ -42,4 +42,4 @@ Summit Ridge Roofing is a reusable US roofing-contractor website built on Whop W
 
 - Refund the $1 test payments in the Whop dashboard (Payments).
 - Decide whether reviewers should see $1 test prices or the real prices.
-- Add the repository and recording links above.
+- Add the recording link above.
