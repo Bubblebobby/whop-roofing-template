@@ -23,7 +23,7 @@ Job done ──► /admin/billing ──► Whop Invoice for the balance (auto-c
 | Setup intents API (card on file) | `src/routes/api/deposit/setup-intent.ts` |
 | Payments API, off-session charge of the saved card | `src/routes/api/deposit/charge.ts` |
 | Leads API (plus a server-side `lead` event via the Events API for visitors Whop doesn't know yet) | `src/routes/api/leads.ts` |
-| Invoices API (`charge_automatically` / `send_invoice`) | `src/routes/api/admin/invoices.ts` |
+| Invoices API (draft with an inline one-time variant, then issue: charges the saved card or emails the customer) | `src/routes/api/admin/invoices.ts` |
 | App secrets + injected API auth | `src/server/whop.ts` |
 
 No custom card forms, no Stripe/PayPal SDKs: every payment field is a Whop element.
@@ -52,6 +52,7 @@ Whop IDs are **not** in code. They come from app secrets, so the same build work
 | `WHOP_PLAN_INSPECTION`, `WHOP_PLAN_DEPOSIT`, `WHOP_PLAN_FLAT_RATE` | `npm run setup:whop` | plan IDs per offer (`planEnv` in the config) |
 | `WHOP_PRODUCT_ID` | `npm run setup:whop` | product leads and final invoices attach to |
 | `ADMIN_TOKEN` | `npm run setup:whop` | password for `/admin/billing` |
+| `WHOP_API_VERSION` | optional | dated Whop API version to pin (defaults to the one the code was written against) |
 | `WHOP_ENVIRONMENT` | optional | `sandbox` once Whop Elements sandbox is generally available |
 
 ## Setup and deploy
@@ -83,9 +84,9 @@ The Whop CLI has no sandbox mode, and Whop's docs note the Elements sandbox envi
 
 1. **Deposit** (`/book/deposit`). `<Payments mode="setup">` renders `EmailElement`, `PaymentElement` and `BrandingElement`. Pressing **Pay deposit** fires `deposit_started`, creates a confirmation token, and the server turns it into a **setup intent** that stores the card on file. 3-D Secure steps run through `handleNextAction`. The server then charges the deposit plan to that saved payment method (idempotent per setup intent).
 2. **Job.** Your crew does the work.
-3. **Final balance** (`/admin/billing`, protected by `ADMIN_TOKEN`). Pick a customer from **cards on file** (succeeded setup intents), enter the contract total, and the deposit is subtracted as a line item. Choose:
-   - **Auto-charge card on file:** `collection_method: charge_automatically` with the saved `payment_method_id`.
-   - **Email invoice:** `collection_method: send_invoice`. Whop emails the customer, who pays online (financing applies there too).
+3. **Final balance** (`/admin/billing`, protected by `ADMIN_TOKEN`). Pick a customer from **cards on file** (succeeded setup intents) and enter the contract total. The invoice bills the balance after the deposit, with the breakdown in the item description. Choose:
+   - **Auto-charge card on file:** the draft invoice carries the saved `payment_method_id`; issuing it charges that card.
+   - **Email invoice:** the invoice is issued without a payment method, so Whop emails the customer, who pays online (financing applies there too).
 
 Fulfillment should be driven by Whop webhooks (`payment.succeeded`, `setup_intent.succeeded`, invoice events); the return page at `/book/complete` only displays the outcome.
 

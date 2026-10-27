@@ -31,6 +31,9 @@ export function accountId() {
   return requireEnv('WHOP_ACCOUNT_ID')
 }
 
+/** Dated Whop API version (Api-Version-Date) the request and response shapes here follow. */
+export const API_VERSION = '2026-10-24'
+
 function apiBase() {
   if (env('WHOP_API_ORIGIN')) return `${env('WHOP_API_ORIGIN')}/api/v1`
   return env('WHOP_ENVIRONMENT') === 'sandbox'
@@ -42,7 +45,9 @@ export async function whopApi<T = any>(
   path: string,
   init: { method?: string; body?: unknown; idempotencyKey?: string } = {},
 ): Promise<T> {
-  const headers: Record<string, string> = { accept: 'application/json' }
+  // Pin the dated API version this code was written against; unpinned requests get
+  // an older response shape (e.g. setup intents without member_id / payment_method_id).
+  const headers: Record<string, string> = { accept: 'application/json', 'api-version-date': env('WHOP_API_VERSION') ?? API_VERSION }
   if (init.body !== undefined) headers['content-type'] = 'application/json'
   const key = env('WHOP_API_KEY')
   if (key) headers.authorization = `Bearer ${key}`

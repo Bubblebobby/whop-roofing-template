@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { site } from '#/site.config'
+import { formatUsd, site } from '#/site.config'
 import { accountId, assertAdmin, env, errorResponse, whopApi, WhopApiError } from '#/server/whop'
 
 type InvoiceInput = {
@@ -16,20 +16,20 @@ type InvoiceInput = {
 
 type Invoice = {
   id: string
-  number?: string
+  number?: string | null
   status: string
-  collection_method: string
+  checkout_link?: string | null
   pay_online_url?: string | null
-  due_date?: string | null
 }
 
 const round = (n: number) => Math.round(n * 100) / 100
 
 /**
- * Final balance → Whop Invoices API (POST /invoices).
- *  - mode "charge": collection_method=charge_automatically against the card saved at deposit.
- *  - mode "send":   collection_method=send_invoice, emailed to the customer to pay online.
- * Line items show the contract total and the deposit credit; they sum to the plan price.
+ * Final balance → Whop Invoices API.
+ *  1. POST /invoices creates a draft with one item: an inline one-time variant priced at the balance.
+ *     The item description shows the contract total and the deposit credit.
+ *  2. POST /invoices/{id}/issue issues it. With the card saved at deposit attached ("charge"),
+ *     issuing charges that card; without one ("send"), Whop emails the customer to pay online.
  */
 export const Route = createFileRoute('/api/admin/invoices')({
   server: {
@@ -53,31 +53,45 @@ export const Route = createFileRoute('/api/admin/invoices')({
           }
 
           const dueDays = Math.min(Math.max(Number(input.dueInDays) || 7, 0), 90)
-          const lineItems = [
-            { label: input.description?.trim() || 'Roof replacement: contract total', quantity: 1, unit_price: total },
-          ]
-          if (deposit > 0) lineItems.push({ label: 'Less deposit paid', quantity: 1, unit_price: -deposit })
-
+          const label = input.description?.trim() || 'Roof replacement'
+          const breakdown =
+            deposit > 0 ? `${label}: ${formatUsd(total)} contract total, less ${formatUsd(deposit)} deposit paid.` : `${label}: ${formatUsd(total)}.`
           const productId = env('WHOP_PRODUCT_ID')
-          const invoice = await whopApi<Invoice>('/invoices', {
+
+          const draft = await whopApi<Invoice>('/invoices', {
             body: {
               account_id: accountId(),
-              collection_method: mode === 'charge' ? 'charge_automatically' : 'send_invoice',
-              ...(productId ? { product_id: productId } : { product: { title: `${site.company.name}: Final balance` } }),
-              plan: { plan_type: 'one_time', initial_price: balance, currency: 'usd' },
-              line_items: lineItems,
-              due_date: new Date(Date.now() + dueDays * 86_400_000).toISOString(),
+              items: [
+                {
+                  quantity: 1,
+                  plan: {
+                    currency: 'usd',
+                    plan_type: 'one_time',
+                    initial_price: balance,
+                    title: 'Final balance',
+                    description: breakdown,
+                    visibility: 'hidden',
+                    ...(productId ? { product_id: productId } : { product: { title: `${site.company.name}: Final balance` } }),
+                  },
+                },
+              ],
+              due_at: new Date(Date.now() + dueDays * 86_400_000).toISOString().replace(/\.\d{3}Z$/, 'Z'),
               member_id: input.memberId || undefined,
+              email_address: input.memberId ? undefined : input.email?.trim(),
+              customer_name: input.memberId ? undefined : input.name?.trim(),
               payment_method_id: mode === 'charge' ? input.paymentMethodId : undefined,
-              email_address: input.email?.trim() || undefined,
-              customer_name: input.name?.trim() || undefined,
+              metadata: { contract_total: String(total), deposit_paid: String(deposit), source: 'admin_billing' },
             },
+          })
+          const invoice = await whopApi<Invoice>(`/invoices/${draft.id}/issue`, {
+            method: 'POST',
+            idempotencyKey: `issue-${draft.id}`,
           })
           return Response.json({
             id: invoice.id,
             number: invoice.number ?? null,
             status: invoice.status,
-            collectionMethod: invoice.collection_method,
+            collectionMethod: mode === 'charge' ? 'charge_automatically' : 'send_invoice',
             payOnlineUrl: invoice.pay_online_url ?? null,
             balance,
           })

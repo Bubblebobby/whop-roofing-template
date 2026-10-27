@@ -29,7 +29,7 @@ export const getPublicConfig = createServerFn({ method: 'GET' }).handler(async (
       const planId = plans[o.key]
       if (!planId) return
       try {
-        const plan = await whopApi<{ initial_price?: number | null }>(`/plans/${planId}`)
+        const plan = await whopApi<{ initial_price?: number | null }>(`/variants/${planId}`)
         if (typeof plan.initial_price === 'number') prices[o.key] = plan.initial_price
       } catch {
         // Fall back to the price in site.config.ts.
